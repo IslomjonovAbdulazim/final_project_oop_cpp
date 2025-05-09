@@ -1,115 +1,79 @@
-// include/list.hpp
 #ifndef LIST_HPP
 #define LIST_HPP
 
 #include <cstddef>
+#include <stdexcept>
+#include <utility>
 
+// Singly-linked list: movable but not copyable
 template<typename T>
 class List {
     struct Node {
-        T        data;
-        Node*    next;
-        Node(const T& d): data(d), next(nullptr) {}
+        T       data;
+        Node*   next;
+        Node(const T& d):       data(d), next(nullptr) {}
+        Node(T&&      d):       data(std::move(d)), next(nullptr) {}
     };
+
     Node* head;
+    std::size_t count;
 
 public:
-    // 1) default ctor
-    List(): head(nullptr) {}
-
-    // 2) copy ctor (deep copy!)
-    List(const List& other): head(nullptr) {
-        for (Node* p = other.head; p; p = p->next) {
-            push_back(p->data);
-        }
-    }
-
-    // 3) copy assign
-    List& operator=(const List& other) {
-        if (this != &other) {
-            clear();
-            for (Node* p = other.head; p; p = p->next) {
-                push_back(p->data);
-            }
-        }
-        return *this;
-    }
-
-    // 4) move ctor
-    List(List&& other) noexcept
-      : head(other.head) {
-        other.head = nullptr;
-    }
-    // 5) move assign
-    List& operator=(List&& other) noexcept {
-        if (this != &other) {
-            clear();
-            head = other.head;
-            other.head = nullptr;
-        }
-        return *this;
-    }
-
-    // 6) dtor
+    List(): head(nullptr), count(0) {}
     ~List() {
-        clear();
-    }
-
-    // push_back
-    void push_back(const T& value) {
-        Node* n = new Node(value);
-        if (!head) {
-            head = n;
-        } else {
-            Node* p = head;
-            while (p->next) p = p->next;
-            p->next = n;
+        while (head) {
+            Node* tmp = head;
+            head = head->next;
+            delete tmp;
         }
     }
 
-    // clear
-    void clear() {
-        Node* p = head;
-        while (p) {
-            Node* nxt = p->next;
-            delete p;
-            p = nxt;
+    List(const List&) = delete;
+    List& operator=(const List&) = delete;
+
+    List(List&& o) noexcept : head(o.head), count(o.count) {
+        o.head = nullptr; o.count = 0;
+    }
+    List& operator=(List&& o) noexcept {
+        if (this != &o) {
+            while (head) { Node* tmp = head; head = head->next; delete tmp; }
+            head = o.head; count = o.count;
+            o.head = nullptr; o.count = 0;
         }
-        head = nullptr;
+        return *this;
     }
 
-    // begin/end for iteration
+    template<typename U>
+    void add(U&& item) {
+        Node* n = new Node(std::forward<U>(item));
+        n->next = head;
+        head = n;
+        ++count;
+    }
+
+    T& get(std::size_t idx) {
+        if (idx >= count) throw std::out_of_range("List::get index out of range");
+        Node* cur = head;
+        for (std::size_t i = 0; i < idx; ++i) cur = cur->next;
+        return cur->data;
+    }
+    const T& get(std::size_t idx) const { return const_cast<List*>(this)->get(idx); }
+
+    std::size_t size() const { return count; }
+    bool empty() const     { return count == 0; }
+
     struct Iterator {
-        Node* cur;
-        Iterator(Node* c): cur(c) {}
-        T& operator*() const { return cur->data; }
-        Iterator& operator++() { cur = cur->next; return *this; }
-        bool operator==(const Iterator& o) const { return cur == o.cur; }
-        bool operator!=(const Iterator& o) const { return cur != o.cur; }
+        Node* ptr;
+        Iterator(Node* p): ptr(p) {}
+        T& operator*() const { return ptr->data; }
+        Iterator& operator++() { ptr = ptr->next; return *this; }
+        bool operator!=(const Iterator& o) const { return ptr != o.ptr; }
     };
-    Iterator begin() const { return Iterator(head); }
-    Iterator end()   const { return Iterator(nullptr); }
 
-    // size
-    std::size_t size() const {
-        std::size_t cnt = 0;
-        for (Node* p = head; p; p = p->next) ++cnt;
-        return cnt;
-    }
-    // get non-const element by index
-    T& operator[](std::size_t idx) {
-        auto it = begin();
-        while (idx-- && it != end()) ++it;
-        return *it;  // undefined if idx >= size()
-    }
-
-    // get const element by index
-    const T& operator[](std::size_t idx) const {
-        auto it = begin();
-        while (idx-- && it != end()) ++it;
-        return *it;
-    }
-
+    Iterator begin()       { return Iterator(head); }
+    Iterator end()         { return Iterator(nullptr); }
+    const Iterator begin() const { return Iterator(head); }
+    const Iterator end()   const { return Iterator(nullptr); }
 };
 
 #endif // LIST_HPP

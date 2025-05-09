@@ -1,110 +1,97 @@
-#include "Folder.hpp"
-#include <iostream>
-#include <iomanip>
-#include <ctime>
+#include "folder.hpp"
+#include <sstream>
 
+// Static init
 int Folder::nextId = 1;
 
-// Constructors
-Folder::Folder()
-    : id(nextId++)
-    , userId(-1)
-    , name("Untitled")
-    , description("No Description")
-    , wordsCount(0)
-    , createdAt(std::time(nullptr))
-    , lastReviewedAt(createdAt)
-    , lastUpdatedAt(createdAt)
-    , totalQuizScore(0.0)
-    , averageQuizScore(0.0)
+Folder::Folder(int userId_, const std::string& name_, const std::string& desc_)
+    : id(nextId++),
+      userId(userId_),
+      name(name_),
+      description(desc_),
+      wordsCount(0),
+      quizResults(),
+      createdAt(std::time(nullptr)),
+      lastReviewedAt(0),
+      lastUpdatedAt(std::time(nullptr))
 {}
 
-Folder::Folder(int uid, const std::string& n, const std::string& d)
-    : id(nextId++)
-    , userId(uid)
-    , name(n)
-    , description(d)
-    , wordsCount(0)
-    , createdAt(std::time(nullptr))
-    , lastReviewedAt(createdAt)
-    , lastUpdatedAt(createdAt)
-    , totalQuizScore(0.0)
-    , averageQuizScore(0.0)
-{}
-
-// Getters
-int Folder::getId()                 const { return id; }
-int Folder::getUserId()             const { return userId; }
-std::string Folder::getName()       const { return name; }
-std::string Folder::getDescription()const { return description; }
-int Folder::getWordsCount()         const { return wordsCount; }
-std::time_t Folder::getCreatedAt()  const { return createdAt; }
-std::time_t Folder::getLastReviewedAt() const { return lastReviewedAt; }
-std::time_t Folder::getLastUpdatedAt()  const { return lastUpdatedAt; }
-List<int> Folder::getQuizzes()      const { return quizzes; }
-double Folder::getAverageQuizScore()const { return averageQuizScore; }
-
-// Setters
-void Folder::setUserId(int uid)               { userId = uid; lastUpdatedAt = std::time(nullptr); }
-void Folder::setName(const std::string& n)    { name = n; lastUpdatedAt = std::time(nullptr); }
-void Folder::setDescription(const std::string& d) { description = d; lastUpdatedAt = std::time(nullptr); }
-void Folder::setWordsCount(int c)             { wordsCount = (c<0?0:c); lastUpdatedAt = std::time(nullptr); }
-void Folder::setLastReviewedAt(std::time_t t) { lastReviewedAt = t; lastUpdatedAt = std::time(nullptr); }
-
-// Quiz‐score methods
-void Folder::addQuizScore(int score) {
-    quizzes.push_back(score);
-    totalQuizScore   += score;
-    averageQuizScore  = quizzes.size() ? (totalQuizScore / quizzes.size()) : 0.0;
-    lastUpdatedAt     = std::time(nullptr);
+Folder::Folder(int id_, int userId_,
+               const std::string& name_, const std::string& desc_,
+               int wordsCount_,
+               List<std::pair<int,int>> results_,
+               std::time_t c_, std::time_t lr_, std::time_t lu_)
+    : id(id_),
+      userId(userId_),
+      name(name_),
+      description(desc_),
+      wordsCount(wordsCount_),
+      quizResults(std::move(results_)),
+      createdAt(c_),
+      lastReviewedAt(lr_),
+      lastUpdatedAt(lu_)
+{
+    if (id_ >= nextId) nextId = id_ + 1;
 }
 
-bool Folder::removeQuizScore(int score) {
-    bool removed = false;
-    List<int> kept;
-    for (auto it = quizzes.begin(); it != quizzes.end(); ++it) {
-        if (!removed && *it == score) {
-            totalQuizScore -= score;
-            removed = true;
-        } else {
-            kept.push_back(*it);
-        }
-    }
-    if (removed) {
-        quizzes.clear();
-        for (auto it = kept.begin(); it != kept.end(); ++it) {
-            quizzes.push_back(*it);
-        }
-        averageQuizScore = quizzes.size() ? (totalQuizScore / quizzes.size()) : 0.0;
-        lastUpdatedAt    = std::time(nullptr);
-    }
-    return removed;
+void Folder::addQuizResult(int correct, int total) {
+    quizResults.add(std::pair<int,int>(correct, total));
+    lastUpdatedAt = std::time(nullptr);
 }
 
-void Folder::clearQuizScores() {
-    quizzes.clear();
-    totalQuizScore   = 0.0;
-    averageQuizScore = 0.0;
-    lastUpdatedAt    = std::time(nullptr);
+double Folder::averageScore() const {
+    if (quizResults.empty()) return 0.0;
+    double acc = 0.0;
+    for (auto it = quizResults.begin(); it != quizResults.end(); ++it) {
+        int correct = (*it).first;
+        int total   = (*it).second;
+        if (total > 0) acc += double(correct) / double(total);
+    }
+    return (acc / double(quizResults.size())) * 100.0;
 }
 
-// Print
-void Folder::printInfo() const {
-    std::cout << "\n========== Folder ==========\n";
-    std::cout << "ID:              " << id << "\n";
-    std::cout << "Owner User ID:   " << userId << "\n";
-    std::cout << "Name:            " << name << "\n";
-    std::cout << "Description:     " << description << "\n";
-    std::cout << "Words Count:     " << wordsCount << "\n";
-    std::cout << "Quizzes Taken:   " << quizzes.size() << "\n";
-    std::cout << "Average Score:   " << averageQuizScore << "%\n";
-    std::cout << "Quiz Scores:     ";
-    for (auto it = quizzes.begin(); it != quizzes.end(); ++it) {
-        std::cout << *it << " ";
+std::string Folder::toCsv() const {
+    std::ostringstream ss;
+    ss << id << ','
+       << userId << ','
+       << name << ','
+       << description << ','
+       << wordsCount << ','
+       << createdAt << ','
+       << lastReviewedAt << ','
+       << lastUpdatedAt << ','
+       << quizResults.size();
+    for (auto it = quizResults.begin(); it != quizResults.end(); ++it) {
+        ss << ',' << (*it).first << '/' << (*it).second;
     }
-    std::cout << "\n";
-    std::cout << "Created At:      " << std::ctime(&createdAt);
-    std::cout << "Last Reviewed:   " << std::ctime(&lastReviewedAt);
-    std::cout << "Last Updated:    " << std::ctime(&lastUpdatedAt);
-    std::cout << "=============================\n\n";
+    return ss.str();
+}
+
+Folder Folder::fromCsv(const std::string& line) {
+    std::istringstream ss(line);
+    std::string tok;
+    int id_, uid, wc;
+    std::string nm, desc;
+    std::time_t c, lr, lu;
+
+    std::getline(ss, tok, ','); id_ = std::stoi(tok);
+    std::getline(ss, tok, ','); uid = std::stoi(tok);
+    std::getline(ss, nm,  ',');
+    std::getline(ss, desc, ',');
+    std::getline(ss, tok, ','); wc = std::stoi(tok);
+    std::getline(ss, tok, ','); c  = std::stoll(tok);
+    std::getline(ss, tok, ','); lr = std::stoll(tok);
+    std::getline(ss, tok, ','); lu = std::stoll(tok);
+    std::getline(ss, tok, ','); int qc = std::stoi(tok);
+
+    List<std::pair<int,int>> results;
+    for (int i = 0; i < qc; ++i) {
+        if (!std::getline(ss, tok, ',')) break;
+        auto pos = tok.find('/');
+        int correct = std::stoi(tok.substr(0, pos));
+        int total   = std::stoi(tok.substr(pos + 1));
+        results.add(std::pair<int,int>(correct, total));
+    }
+
+    return Folder(id_, uid, nm, desc, wc, std::move(results), c, lr, lu);
 }

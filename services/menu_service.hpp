@@ -2,46 +2,28 @@
 #define MENU_SERVICE_HPP
 
 #include "console_service.hpp"
-#include "auth_service.hpp"
 #include "file_manager.hpp"
+#include "auth_service.hpp"
 #include "../models/folder.hpp"
 #include "../models/word.hpp"
-#include "../models/quiz.hpp"
-#include "../include/list.hpp"
 
 class MenuService {
-public:
-    MenuService(ConsoleService& console,
-                AuthService& auth,
-                FileManager& fm);
-
-    // Kick everything off:
-    void run();
-
 private:
     ConsoleService& console;
-    AuthService&    auth;
     FileManager&    fm;
+    AuthService     auth;
+    User*           currentUser = nullptr;
 
-    // 1) Authentication
-    void authMenu();
-    void handleLogin();
-    void handleRegister();
-
-    // 2) Main app
+    void welcome();
     void mainMenu();
+    void manageFolders();
+    void manageWords(int folderId);
+    void takeQuiz();
+    void manageQuizResults(int folderId);
 
-    // 3) Folder flows
-    void folderListMenu();
-    void folderDetailMenu(const Folder& folder);
-    void newFolderMenu();
-
-    // 4) Word flows
-    void newWordMenu();
-    void newWordInFolder(const Folder& folder);
-
-    // 5) Quiz flows
-    void quizMenu(const Folder& folder);
+public:
+    MenuService(ConsoleService& cs, FileManager& fileMgr);
+    void run();
 };
 
 #endif // MENU_SERVICE_HPP

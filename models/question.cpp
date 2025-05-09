@@ -1,77 +1,38 @@
-#include "Question.hpp"
-#include <iostream>
+#include "question.hpp"
+#include <sstream>
+#include <stdexcept>
 
 int Question::nextId = 1;
 
-// Default constructor
-Question::Question()
-  : id(nextId++)
-  , userId(-1)
-  , wordId(0)
-  , word("")
-  , options()
-  , correctAnswer("")
-  , userSelected("")
-  , folderId(0)
-  , quizId(0)
-{}
+Question::Question(int quizId_, const std::string& p, const std::string& a)
+    : id(nextId++), quizId(quizId_), prompt(p), answer(a) {}
 
-// Main constructor
-Question::Question(int uid,
-                   int wId,
-                   const std::string& w,
-                   const List<std::string>& opts,
-                   const std::string& corr,
-                   int fId,
-                   int qId)
-  : id(nextId++)
-  , userId(uid)
-  , wordId(wId)
-  , word(w)
-  , options(opts)
-  , correctAnswer(corr)
-  , userSelected("")
-  , folderId(fId)
-  , quizId(qId)
-{
-    // ensure correctAnswer is in options
-    bool found = false;
-    for (auto it = options.begin(); it != options.end(); ++it) {
-        if (*it == correctAnswer) { found = true; break; }
-    }
-    if (!found) {
-        options.push_back(correctAnswer);
-    }
+Question::Question(int id_, int quizId_, const std::string& p, const std::string& a)
+    : id(id_), quizId(quizId_), prompt(p), answer(a) {
+    if (id_ >= nextId) nextId = id_ + 1;
 }
 
-// Getters
-int Question::getId()               const { return id; }
-int Question::getUserId()           const { return userId; }
-int Question::getWordId()           const { return wordId; }
-std::string Question::getWord()     const { return word; }
-List<std::string> Question::getOptions() const { return options; }
-std::string Question::getCorrectAnswer() const { return correctAnswer; }
-std::string Question::getUserSelected()  const { return userSelected; }
-int Question::getFolderId()         const { return folderId; }
-int Question::getQuizId()           const { return quizId; }
+int Question::getId() const    { return id; }
+int Question::getQuizId() const { return quizId; }
+const std::string& Question::getPrompt() const { return prompt; }
+bool Question::checkAnswer(const std::string& ans) const { return ans == answer; }
 
-
-// Check correctness
-bool Question::isCorrect() const {
-    return (!userSelected.empty() && userSelected == correctAnswer);
+std::string Question::toCsv() const {
+    std::ostringstream ss;
+    ss << id << ',' << quizId << ',' << prompt << ',' << answer;
+    return ss.str();
 }
 
-// Print
-void Question::printQuestion() const {
-    std::cout << "\n---- Question " << id << " ----\n";
-    std::cout << word << "\n";
-    char label = 'A';
-    for (auto it = options.begin(); it != options.end(); ++it) {
-        std::cout << "  " << label++ << ") " << *it << "\n";
-    }
-    if (!userSelected.empty()) {
-        std::cout << "\nYou chose: " << userSelected
-                  << (isCorrect() ? "  [✓]" : "  [✗]") << "\n";
-    }
-    std::cout << "-----------------------\n";
+Question Question::fromCsv(const std::string& line) {
+    std::istringstream ss(line);
+    std::string tok, p, a;
+    int id_, qid;
+
+    std::getline(ss, tok, ','); id_ = std::stoi(tok);
+    std::getline(ss, tok, ','); qid = std::stoi(tok);
+    std::getline(ss, p, ',');
+    std::getline(ss, a, ',');
+
+    if (id_ >= nextId) nextId = id_ + 1;
+    return Question(id_, qid, p, a);
 }

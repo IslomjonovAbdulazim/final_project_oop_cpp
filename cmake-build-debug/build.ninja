@@ -51,61 +51,71 @@ build cmake_object_order_depends_target_final_project: phony || .
 
 build CMakeFiles/final_project.dir/main.cpp.o: CXX_COMPILER__final_project_unscanned_Debug /Users/abdulazim/CLionProjects/final_project/main.cpp || cmake_object_order_depends_target_final_project
   DEP_FILE = CMakeFiles/final_project.dir/main.cpp.o.d
-  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/abdulazim/CLionProjects/final_project/include
   OBJECT_DIR = CMakeFiles/final_project.dir
   OBJECT_FILE_DIR = CMakeFiles/final_project.dir
 
-build CMakeFiles/final_project.dir/services/file_manager.cpp.o: CXX_COMPILER__final_project_unscanned_Debug /Users/abdulazim/CLionProjects/final_project/services/file_manager.cpp || cmake_object_order_depends_target_final_project
-  DEP_FILE = CMakeFiles/final_project.dir/services/file_manager.cpp.o.d
-  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
-  OBJECT_DIR = CMakeFiles/final_project.dir
-  OBJECT_FILE_DIR = CMakeFiles/final_project.dir/services
-
 build CMakeFiles/final_project.dir/models/folder.cpp.o: CXX_COMPILER__final_project_unscanned_Debug /Users/abdulazim/CLionProjects/final_project/models/folder.cpp || cmake_object_order_depends_target_final_project
   DEP_FILE = CMakeFiles/final_project.dir/models/folder.cpp.o.d
-  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
-  OBJECT_DIR = CMakeFiles/final_project.dir
-  OBJECT_FILE_DIR = CMakeFiles/final_project.dir/models
-
-build CMakeFiles/final_project.dir/models/word.cpp.o: CXX_COMPILER__final_project_unscanned_Debug /Users/abdulazim/CLionProjects/final_project/models/word.cpp || cmake_object_order_depends_target_final_project
-  DEP_FILE = CMakeFiles/final_project.dir/models/word.cpp.o.d
-  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
-  OBJECT_DIR = CMakeFiles/final_project.dir
-  OBJECT_FILE_DIR = CMakeFiles/final_project.dir/models
-
-build CMakeFiles/final_project.dir/models/quiz.cpp.o: CXX_COMPILER__final_project_unscanned_Debug /Users/abdulazim/CLionProjects/final_project/models/quiz.cpp || cmake_object_order_depends_target_final_project
-  DEP_FILE = CMakeFiles/final_project.dir/models/quiz.cpp.o.d
-  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/abdulazim/CLionProjects/final_project/include
   OBJECT_DIR = CMakeFiles/final_project.dir
   OBJECT_FILE_DIR = CMakeFiles/final_project.dir/models
 
 build CMakeFiles/final_project.dir/models/question.cpp.o: CXX_COMPILER__final_project_unscanned_Debug /Users/abdulazim/CLionProjects/final_project/models/question.cpp || cmake_object_order_depends_target_final_project
   DEP_FILE = CMakeFiles/final_project.dir/models/question.cpp.o.d
-  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/abdulazim/CLionProjects/final_project/include
   OBJECT_DIR = CMakeFiles/final_project.dir
   OBJECT_FILE_DIR = CMakeFiles/final_project.dir/models
 
-build CMakeFiles/final_project.dir/services/console_service.cpp.o: CXX_COMPILER__final_project_unscanned_Debug /Users/abdulazim/CLionProjects/final_project/services/console_service.cpp || cmake_object_order_depends_target_final_project
-  DEP_FILE = CMakeFiles/final_project.dir/services/console_service.cpp.o.d
-  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
+build CMakeFiles/final_project.dir/models/quiz.cpp.o: CXX_COMPILER__final_project_unscanned_Debug /Users/abdulazim/CLionProjects/final_project/models/quiz.cpp || cmake_object_order_depends_target_final_project
+  DEP_FILE = CMakeFiles/final_project.dir/models/quiz.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/abdulazim/CLionProjects/final_project/include
   OBJECT_DIR = CMakeFiles/final_project.dir
-  OBJECT_FILE_DIR = CMakeFiles/final_project.dir/services
-
-build CMakeFiles/final_project.dir/services/menu_service.cpp.o: CXX_COMPILER__final_project_unscanned_Debug /Users/abdulazim/CLionProjects/final_project/services/menu_service.cpp || cmake_object_order_depends_target_final_project
-  DEP_FILE = CMakeFiles/final_project.dir/services/menu_service.cpp.o.d
-  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
-  OBJECT_DIR = CMakeFiles/final_project.dir
-  OBJECT_FILE_DIR = CMakeFiles/final_project.dir/services
+  OBJECT_FILE_DIR = CMakeFiles/final_project.dir/models
 
 build CMakeFiles/final_project.dir/models/user.cpp.o: CXX_COMPILER__final_project_unscanned_Debug /Users/abdulazim/CLionProjects/final_project/models/user.cpp || cmake_object_order_depends_target_final_project
   DEP_FILE = CMakeFiles/final_project.dir/models/user.cpp.o.d
-  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/abdulazim/CLionProjects/final_project/include
+  OBJECT_DIR = CMakeFiles/final_project.dir
+  OBJECT_FILE_DIR = CMakeFiles/final_project.dir/models
+
+build CMakeFiles/final_project.dir/models/word.cpp.o: CXX_COMPILER__final_project_unscanned_Debug /Users/abdulazim/CLionProjects/final_project/models/word.cpp || cmake_object_order_depends_target_final_project
+  DEP_FILE = CMakeFiles/final_project.dir/models/word.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/abdulazim/CLionProjects/final_project/include
   OBJECT_DIR = CMakeFiles/final_project.dir
   OBJECT_FILE_DIR = CMakeFiles/final_project.dir/models
 
 build CMakeFiles/final_project.dir/services/auth_service.cpp.o: CXX_COMPILER__final_project_unscanned_Debug /Users/abdulazim/CLionProjects/final_project/services/auth_service.cpp || cmake_object_order_depends_target_final_project
   DEP_FILE = CMakeFiles/final_project.dir/services/auth_service.cpp.o.d
-  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/abdulazim/CLionProjects/final_project/include
+  OBJECT_DIR = CMakeFiles/final_project.dir
+  OBJECT_FILE_DIR = CMakeFiles/final_project.dir/services
+
+build CMakeFiles/final_project.dir/services/console_service.cpp.o: CXX_COMPILER__final_project_unscanned_Debug /Users/abdulazim/CLionProjects/final_project/services/console_service.cpp || cmake_object_order_depends_target_final_project
+  DEP_FILE = CMakeFiles/final_project.dir/services/console_service.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/abdulazim/CLionProjects/final_project/include
+  OBJECT_DIR = CMakeFiles/final_project.dir
+  OBJECT_FILE_DIR = CMakeFiles/final_project.dir/services
+
+build CMakeFiles/final_project.dir/services/file_manager.cpp.o: CXX_COMPILER__final_project_unscanned_Debug /Users/abdulazim/CLionProjects/final_project/services/file_manager.cpp || cmake_object_order_depends_target_final_project
+  DEP_FILE = CMakeFiles/final_project.dir/services/file_manager.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/abdulazim/CLionProjects/final_project/include
+  OBJECT_DIR = CMakeFiles/final_project.dir
+  OBJECT_FILE_DIR = CMakeFiles/final_project.dir/services
+
+build CMakeFiles/final_project.dir/services/menu_service.cpp.o: CXX_COMPILER__final_project_unscanned_Debug /Users/abdulazim/CLionProjects/final_project/services/menu_service.cpp || cmake_object_order_depends_target_final_project
+  DEP_FILE = CMakeFiles/final_project.dir/services/menu_service.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -fcolor-diagnostics
+  INCLUDES = -I/Users/abdulazim/CLionProjects/final_project/include
   OBJECT_DIR = CMakeFiles/final_project.dir
   OBJECT_FILE_DIR = CMakeFiles/final_project.dir/services
 
@@ -117,7 +127,7 @@ build CMakeFiles/final_project.dir/services/auth_service.cpp.o: CXX_COMPILER__fi
 #############################################
 # Link the executable final_project
 
-build final_project: CXX_EXECUTABLE_LINKER__final_project_Debug CMakeFiles/final_project.dir/main.cpp.o CMakeFiles/final_project.dir/services/file_manager.cpp.o CMakeFiles/final_project.dir/models/folder.cpp.o CMakeFiles/final_project.dir/models/word.cpp.o CMakeFiles/final_project.dir/models/quiz.cpp.o CMakeFiles/final_project.dir/models/question.cpp.o CMakeFiles/final_project.dir/services/console_service.cpp.o CMakeFiles/final_project.dir/services/menu_service.cpp.o CMakeFiles/final_project.dir/models/user.cpp.o CMakeFiles/final_project.dir/services/auth_service.cpp.o
+build final_project: CXX_EXECUTABLE_LINKER__final_project_Debug CMakeFiles/final_project.dir/main.cpp.o CMakeFiles/final_project.dir/models/folder.cpp.o CMakeFiles/final_project.dir/models/question.cpp.o CMakeFiles/final_project.dir/models/quiz.cpp.o CMakeFiles/final_project.dir/models/user.cpp.o CMakeFiles/final_project.dir/models/word.cpp.o CMakeFiles/final_project.dir/services/auth_service.cpp.o CMakeFiles/final_project.dir/services/console_service.cpp.o CMakeFiles/final_project.dir/services/file_manager.cpp.o CMakeFiles/final_project.dir/services/menu_service.cpp.o
   FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3
   OBJECT_DIR = CMakeFiles/final_project.dir
   POST_BUILD = :

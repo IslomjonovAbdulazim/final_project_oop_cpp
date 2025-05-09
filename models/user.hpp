@@ -2,44 +2,30 @@
 #define USER_HPP
 
 #include <string>
+#include <ctime>
 
 class User {
 private:
-    static int nextId;     // auto-increment ID
-
-    int       id;
+    int         id;
     std::string username;
-    std::string password;  // in a real app you'd hash this
-    std::string fullname;
-    bool      loggedIn;
+    std::string passwordHash;
+    std::time_t createdAt;
+
+    static int nextId;
 
 public:
-    // Constructors
-    User();
-    User(const std::string& username,
-         const std::string& password,
-         const std::string& fullname);
+    User(const std::string& uname, const std::string& pwdHash);
+    User(int id_, const std::string& uname, const std::string& pwdHash, std::time_t createdAt_);
 
-    // Getters
-    int    getId() const;
-    std::string getUsername() const;
-    std::string getFullname() const;
-    bool   isLoggedIn() const;
+    int         getId() const;
+    const std::string& getUsername() const;
+    bool        verifyPassword(const std::string& pwd) const;  // simple hash compare
 
-    // Setters
-    void setUsername(const std::string& u);
-    void setPassword(const std::string& p);
-    void setFullname(const std::string& f);
+    // CSV I/O
+    std::string toCsv() const;
+    static User   fromCsv(const std::string& line);
 
-    // Auth methods
-    // Returns true and marks user logged in if password matches
-    bool login(const std::string& passwordAttempt);
-
-    // Logs the user out
-    void logout();
-
-    // Print brief user info (no password!)
-    void printInfo() const;
+    static void   setNextId(int v) { nextId = v; }
 };
 
 #endif // USER_HPP

@@ -1,48 +1,42 @@
 #ifndef QUIZ_HPP
 #define QUIZ_HPP
 
+#include <string>
 #include <ctime>
+#include "question.hpp"
 #include "../include/list.hpp"
 
 class Quiz {
 private:
-    static int    nextId;
     int           id;
-    int           userId;        // who took/created this quiz
     int           folderId;
-    int           totalQuestions;
-    int           correctCount;
-    int           wrongCount;
+    std::time_t   startedAt;
+    std::time_t   finishedAt;
     List<int>     questionIds;
-    std::time_t   quizStart;
-    std::time_t   quizEnd;
+    List<bool>    results;    // true = correct
+
+    static int    nextId;
 
 public:
-    // Constructors
-    Quiz();
-    Quiz(int userId, int folderId, int totalQuestions);
+    Quiz(int folderId_);
+    Quiz(int id_, int folderId_, std::time_t sa, std::time_t fa,
+         const List<int>& qids, const List<bool>& res);
 
-    // Getters
-    int getId() const;
-    int getUserId() const;
-    int getFolderId() const;
-    int getTotalQuestions() const;
-    int getCorrectCount() const;
-    int getWrongCount() const;
-    int getTimeTaken() const;      // seconds
-    std::time_t getQuizDate() const;
-    List<int> getQuestionIds() const;
+    int           getId() const;
+    int           getFolderId() const;
+    void          addQuestion(int qid);
+    void          recordResult(bool correct);
+    void          finish();
 
-    // Modifiers
-    void addQuestion(int qid);
-    void recordResult(int correct, int wrong, int secondsTaken);
+    int           score() const;    // number correct
+    int           total() const;    // number asked
 
-    // Print
-    void printInfo() const;
+    // CSV I/O
+    std::string   toCsv() const;
+    static Quiz   fromCsv(const std::string& line);
+    std::time_t getStartedAt()  const;
+    std::time_t getFinishedAt() const;
 
-    void setUserId(int uid)             noexcept { userId = uid; }
-    void setFolderId(int fid)           noexcept { folderId = fid; }
-    void setTotalQuestions(int t)       noexcept { totalQuestions = t; }
 };
 
 #endif // QUIZ_HPP

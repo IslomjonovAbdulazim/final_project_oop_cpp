@@ -1,74 +1,98 @@
-#include "Quiz.hpp"
-#include <iostream>
-#include <ctime>
+#include "quiz.hpp"
+#include <sstream>
+#include <stdexcept>
 
 int Quiz::nextId = 1;
 
-// Default constructor
-Quiz::Quiz()
-  : id(nextId++)
-  , userId(-1)
-  , folderId(0)
-  , totalQuestions(0)
-  , correctCount(0)
-  , wrongCount(0)
-  , quizStart(std::time(nullptr))
-  , quizEnd(quizStart)
-{}
-
-// Main constructor
-Quiz::Quiz(int uid, int fId, int tQ)
-  : id(nextId++)
-  , userId(uid)
-  , folderId(fId)
-  , totalQuestions(tQ < 0 ? 0 : tQ)
-  , correctCount(0)
-  , wrongCount(0)
-  , quizStart(std::time(nullptr))
-  , quizEnd(quizStart)
-{}
-
-// Getters
-int Quiz::getId() const              { return id; }
-int Quiz::getUserId() const          { return userId; }
-int Quiz::getFolderId() const        { return folderId; }
-int Quiz::getTotalQuestions() const  { return totalQuestions; }
-int Quiz::getCorrectCount() const    { return correctCount; }
-int Quiz::getWrongCount() const      { return wrongCount; }
-int Quiz::getTimeTaken() const       { return static_cast<int>(quizEnd - quizStart); }
-std::time_t Quiz::getQuizDate() const{ return quizStart; }
-List<int> Quiz::getQuestionIds() const { return questionIds; }
-
-// Modifiers
-void Quiz::addQuestion(int qid) {
-    questionIds.push_back(qid);
+static std::time_t parseTimeQ(const std::string& s) {
+    return static_cast<std::time_t>(std::stoll(s));
 }
 
-void Quiz::recordResult(int correct, int wrong, int secondsTaken) {
-    if (correct < 0) correct = 0;
-    if (wrong   < 0) wrong   = 0;
-    correctCount = correct;
-    wrongCount   = wrong;
-    int sum      = correct + wrong;
-    if (sum > 0 && sum != totalQuestions)
-        totalQuestions = sum;
-    quizEnd = quizStart + secondsTaken;
+Quiz::Quiz(int folderId_)
+    : id(nextId++), folderId(folderId_),
+      startedAt(std::time(nullptr)), finishedAt(0)
+{
 }
 
-// Print
-void Quiz::printInfo() const {
-    std::cout << "\n======== Quiz ========\n";
-    std::cout << "ID:             " << id << "\n";
-    std::cout << "User ID:        " << userId << "\n";
-    std::cout << "Folder ID:      " << folderId << "\n";
-    std::cout << "Questions:      " << totalQuestions << "\n";
-    std::cout << "Correct:        " << correctCount << "\n";
-    std::cout << "Wrong:          " << wrongCount << "\n";
-    std::cout << "Time Taken:     " << getTimeTaken() << " s\n";
-    std::cout << "Started:        " << std::ctime(&quizStart);
-    std::cout << "Finished:       " << std::ctime(&quizEnd);
-    std::cout << "Q IDs:          ";
-    for (auto it = questionIds.begin(); it != questionIds.end(); ++it)
-        std::cout << *it << " ";
-    std::cout << "\n======================\n";
+Quiz::Quiz(int id_, int fid, std::time_t sa, std::time_t fa,
+           const List<int>& qids, const List<bool>& res)
+    : id(id_), folderId(fid), startedAt(sa), finishedAt(fa)
+{
+    if (id_ >= nextId) nextId = id_ + 1;
+    // copy question IDs
+    for (auto it = qids.begin(); it != qids.end(); ++it) {
+        questionIds.add(*it);
+    }
+    // copy results
+    for (auto it = res.begin(); it != res.end(); ++it) {
+        results.add(*it);
+    }
+}
+
+int Quiz::getId() const          { return id; }
+int Quiz::getFolderId() const    { return folderId; }
+
+void Quiz::addQuestion(int qid)  { questionIds.add(qid); }
+void Quiz::recordResult(bool correct) { results.add(correct); }
+
+void Quiz::finish() {
+    finishedAt = std::time(nullptr);
+}
+
+int Quiz::score() const {
+    int s = 0;
+    for (auto it = results.begin(); it != results.end(); ++it)
+        if (*it) ++s;
+    return s;
+}
+
+int Quiz::total() const {
+    return static_cast<int>(results.size());
+}
+
+std::string Quiz::toCsv() const {
+    std::ostringstream ss;
+    ss << id << ',' << folderId << ',' << startedAt << ',' << finishedAt
+       << ',' << questionIds.size();
+    for (std::size_t i = 0; i < questionIds.size(); ++i)
+        ss << ',' << questionIds.get(i);
+    ss << ',' << results.size();
+    for (std::size_t i = 0; i < results.size(); ++i)
+        ss << ',' << (results.get(i) ? 1 : 0);
+    return ss.str();
+}
+
+Quiz Quiz::fromCsv(const std::string& line) {
+    std::istringstream ss(line);
+    std::string tok;
+    int id_, fid, cntQ, cntR;
+    std::time_t sa, fa;
+
+    std::getline(ss, tok, ','); id_ = std::stoi(tok);
+    std::getline(ss, tok, ','); fid = std::stoi(tok);
+    std::getline(ss, tok, ','); sa = parseTimeQ(tok);
+    std::getline(ss, tok, ','); fa = parseTimeQ(tok);
+    std::getline(ss, tok, ','); cntQ = std::stoi(tok);
+
+    List<int> qids;
+    for (int i = 0; i < cntQ; ++i) {
+        std::getline(ss, tok, ',');
+        qids.add(std::stoi(tok));
+    }
+
+    std::getline(ss, tok, ','); cntR = std::stoi(tok);
+    List<bool> res;
+    for (int i = 0; i < cntR; ++i) {
+        std::getline(ss, tok, ',');
+        res.add(tok == "1");
+    }
+
+    return Quiz(id_, fid, sa, fa, qids, res);
+}
+std::time_t Quiz::getStartedAt() const {
+    return startedAt;
+}
+
+std::time_t Quiz::getFinishedAt() const {
+    return finishedAt;
 }

@@ -1,26 +1,14 @@
-cmake_minimum_required(VERSION 3.29)
+cmake_minimum_required(VERSION 3.10)
 project(final_project)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
-add_executable(final_project main.cpp
-        services/file_manager.hpp
-        services/file_manager.cpp
-        models/folder.hpp
-        models/folder.cpp
-        models/word.hpp
-        models/word.cpp
-        models/quiz.hpp
-        models/quiz.cpp
-        models/question.hpp
-        models/question.cpp
-        include/list.hpp
-        services/console_service.hpp
-        services/console_service.cpp
-        services/menu_service.cpp
-        services/menu_service.hpp
-        models/user.cpp
-        models/user.hpp
-        services/auth_service.cpp
-        services/auth_service.hpp
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
+file(GLOB_RECURSE SRC_FILES
+        "${PROJECT_SOURCE_DIR}/main.cpp"
+        "${PROJECT_SOURCE_DIR}/services/*.cpp"
+        "${PROJECT_SOURCE_DIR}/models/*.cpp"
 )
+
+add_executable(final_project ${SRC_FILES})
