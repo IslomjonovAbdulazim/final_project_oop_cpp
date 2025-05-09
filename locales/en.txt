@@ -1,0 +1,12 @@
+# Main menu
+main.title=📚  Language Learning
+main.new_quiz=a) New Quiz
+main.folders=b) Folders
+main.new_folder=c) New Folder
+main.new_word=d) New Word
+main.quick_action=e) Quick Actions
+main.settings=f) Settings
+main.exit=x) Exit
+
+# Generic
+press_any=Press ENTER to continue.
