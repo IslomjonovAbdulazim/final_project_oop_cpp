@@ -4,6 +4,20 @@
 #include <algorithm>
 #include <random>
 #include <cctype>
+
+
+static std::string trim(const std::string& s) {
+    auto start = s.find_first_not_of(" \t\n\r");
+    auto end   = s.find_last_not_of(" \t\n\r");
+    if (start == std::string::npos) return "";
+    return s.substr(start, end - start + 1);
+}
+static std::string toLower(const std::string& s) {
+    std::string lc = s;
+    std::transform(lc.begin(), lc.end(), lc.begin(),
+                   [](unsigned char c){ return std::tolower(c); });
+    return lc;
+}
 static std::string ltrim(const std::string& s) {
     auto p = s.find_first_not_of(" \t\n\r");
     if (p == std::string::npos) return "";
@@ -22,13 +36,14 @@ void MenuService::run() {
 
 // Welcome / login flow
 void MenuService::welcome() {
-    console.clearScreen();
     while (!currentUser) {
         std::cout << " Login or Signup\n\n";
         std::cout << "1) Login\n2) Signup\nChoice: ";
         int c = console.promptInt("", 1, 2);
         std::string user = console.prompt("Username: ");
         std::string pass = console.prompt("Password: ");
+        user = trim(toLower(user));
+        pass = trim(toLower(pass));
         try {
             if (c == 1) {
                 currentUser = auth.login(user, pass);
@@ -390,18 +405,6 @@ void MenuService::manageWords(int folderId) {
     }
 }
 
-static std::string trim(const std::string& s) {
-    auto start = s.find_first_not_of(" \t\n\r");
-    auto end   = s.find_last_not_of(" \t\n\r");
-    if (start == std::string::npos) return "";
-    return s.substr(start, end - start + 1);
-}
-static std::string toLower(const std::string& s) {
-    std::string lc = s;
-    std::transform(lc.begin(), lc.end(), lc.begin(),
-                   [](unsigned char c){ return std::tolower(c); });
-    return lc;
-}
 
 // Quiz flow
 void MenuService::takeQuiz() {
@@ -438,7 +441,6 @@ void MenuService::takeQuiz() {
     Quiz quiz(folderId);
     for (size_t q = 0; q < quizN; ++q) {
         Word* w = pool.at(q);
-        console.clearScreen();
         std::cout << "❓ Q" << (q+1) << ": " << w->getDefinition() << "\n> ";
         std::string rawAns = console.prompt("");
         // Normalize both strings
@@ -456,7 +458,6 @@ void MenuService::takeQuiz() {
     quiz.finish();
 
     // 4) Show score
-    console.clearScreen();
     int score = quiz.score();
     int total = quiz.total();  // capture while quiz is still valid
     std::cout << "🏁 Quiz Complete: " << score << " / " << total << "\n";

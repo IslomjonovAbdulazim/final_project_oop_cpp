@@ -5,7 +5,6 @@
 
 class ConsoleService {
 public:
-    void clearScreen() const;
     void pause() const;
     std::string prompt(const std::string& msg) const;
     int promptInt(const std::string& msg, int min, int max) const;
