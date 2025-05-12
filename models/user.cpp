@@ -5,14 +5,6 @@
 
 int User::nextId = 1;
 
-static std::string nowIso() {
-    std::time_t t = std::time(nullptr);
-    std::tm* tm = std::localtime(&t);
-    std::ostringstream ss;
-    ss << std::put_time(tm, "%Y-%m-%dT%H:%M:%S");
-    return ss.str();
-}
-
 User::User(const std::string& uname, const std::string& pwdHash)
     : id(nextId++), username(uname), passwordHash(pwdHash), createdAt(std::time(nullptr)) {}
 

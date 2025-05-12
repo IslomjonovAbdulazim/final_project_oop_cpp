@@ -24,23 +24,23 @@ void MenuService::run() {
 void MenuService::welcome() {
     console.clearScreen();
     while (!currentUser) {
-        std::cout << "🔐  Login or Signup\n\n";
-        std::cout << "1) 🔑 Login\n2) ✍️ Signup\nChoice: ";
+        std::cout << " Login or Signup\n\n";
+        std::cout << "1) Login\n2) Signup\nChoice: ";
         int c = console.promptInt("", 1, 2);
         std::string user = console.prompt("Username: ");
         std::string pass = console.prompt("Password: ");
         try {
             if (c == 1) {
                 currentUser = auth.login(user, pass);
-                if (!currentUser) std::cout << "❌ Invalid credentials.\n";
+                if (!currentUser) std::cout << " Invalid credentials.\n";
             } else {
                 auth.signup(user, pass);
                 auth.persist();
                 currentUser = auth.login(user, pass);
-                std::cout << "✅ Account created.\n";
+                std::cout << " Account created.\n";
             }
         } catch (const std::exception& e) {
-            std::cout << "⚠️ Error: " << e.what() << "\n";
+            std::cout << " Error: " << e.what() << "\n";
         }
     }
 }
@@ -49,27 +49,24 @@ void MenuService::welcome() {
 void MenuService::mainMenu() {
     while (true) {
         console.spacer();
-        std::cout << "🌟  Main Menu  🌟\n\n";
-        std::cout << "1) 🗂️  Manage Folders\n";
-        std::cout << "2) 🧪  Take Quiz\n\n";
+        std::cout << "Main Menu\n\n";
+        std::cout << "1) Manage Folders\n";
+        std::cout << "2) Take Quiz\n\n";
         std::cout << "[F]olders  [Q]uiz  [E]xit\n\n";
-
-        std::string inp = console.prompt("👉  Enter choice: ");
+        std::string inp = console.prompt("Enter choice: ");
         if (inp.empty()) continue;
         char cmd = std::toupper(inp.at(0));
-
         if (std::isdigit(cmd)) {
             int n = std::stoi(inp);
-            if (n == 1)      manageFolders();
+            if (n == 1) manageFolders();
             else if (n == 2) takeQuiz();
-            else             std::cout << "❌ Invalid number.\n";
-        }
-        else {
+            else std::cout << "Invalid number.\n";
+        } else {
             switch (cmd) {
-                case 'F': manageFolders(); break;
-                case 'Q': takeQuiz();      break;
-                case 'E': return;
-                default:  std::cout << "❌ Unknown command.\n";
+            case 'F': manageFolders(); break;
+            case 'Q': takeQuiz(); break;
+            case 'E': return;
+            default: std::cout << "Unknown command.\n";
             }
         }
         console.pause();
@@ -79,43 +76,59 @@ void MenuService::mainMenu() {
 // Folder CRUD & stats
 
 void MenuService::manageFolders() {
+    int userId = currentUser->getId();
     while (true) {
         console.spacer();
 
-        // 1) Load folders and build a sorted view
         auto folders = fm.loadFolders();
-        std::vector<Folder*> view;
-        view.reserve(folders.size());
-        for (std::size_t i = 0; i < folders.size(); ++i)
-            view.push_back(&folders.get(i));
-        std::sort(view.begin(), view.end(),
-            [](Folder* a, Folder* b){
-                std::string na = a->getName(), nb = b->getName();
-                std::transform(na.begin(), na.end(), na.begin(), ::tolower);
-                std::transform(nb.begin(), nb.end(), nb.begin(), ::tolower);
-                return na < nb;
+        List<Folder> filtered;
+
+        for (auto it = folders.begin(); it != folders.end(); ++it) {
+            if ((*it).getUserId() == userId) {
+                filtered.add(std::move(*it));  // move instead of copy
             }
-        );
+        }
+        folders = std::move(filtered);
+        List<Folder*> view;
+        for (std::size_t i = 0; i < folders.size(); ++i)
+            view.add(&folders.get(i));
+
+        // Bubble sort (case-insensitive) on our custom List
+        auto toLower = [](const std::string& s) {
+            std::string result = s;
+            std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+            return result;
+        };
+        for (std::size_t i = 0; i < view.size(); ++i) {
+            for (std::size_t j = 0; j + 1 < view.size() - i; ++j) {
+                Folder*& a = view.get(j);
+                Folder*& b = view.get(j + 1);
+                if (toLower(a->getName()) > toLower(b->getName())) {
+                    std::swap(a, b);
+                }
+            }
+        }
 
         // 2) Display
-        std::cout << "🗂️  Your Folders & Stats  🗂️\n\n";
+        std::cout << " Your Folders & Stats \n\n";
         for (std::size_t i = 0; i < view.size(); ++i) {
-            const auto& f = *view.at(i);
+            const auto& f = *view.get(i);
             std::printf(
-                "%2zu) 📁  %-15s  📝%3d  🎯%3zu  📊%5.1f%%\n",
-                i+1,
+                "%2zu)  %-15s  %3d  %3zu  %5.1f%%\n",
+                i + 1,
                 f.getName().c_str(),
                 f.getWordsCount(),
                 f.getQuizCount(),
                 f.averageScore()
             );
         }
+
         std::cout << "\n"
-                  << "[C]➕ Create  [D]➖ Delete  [R]✏️ Rename  "
-                  << "[W]📖 Words  [V]📊 Results  [B]🔙 Back\n\n";
+                  << "[C] Create  [D] Delete  [R] Rename  "
+                  << "[W] Words  [V] Results  [B] Back\n\n";
 
         // 3) Read input
-        std::string raw = console.prompt("👉  Folder # or cmd: ");
+        std::string raw = console.prompt(" Folder # or cmd: ");
         std::string inp = ltrim(raw);
         if (inp.empty()) continue;
         char cmd = std::toupper(static_cast<unsigned char>(inp.at(0)));
@@ -124,7 +137,7 @@ void MenuService::manageFolders() {
         if (std::isdigit(cmd)) {
             int sel = std::stoi(inp) - 1;
             if (sel >= 0 && sel < int(view.size())) {
-                manageWords(view.at(sel)->getId());
+                manageWords(view.get(sel)->getId());
                 continue;
             }
         }
@@ -132,82 +145,87 @@ void MenuService::manageFolders() {
         // 5) Letter commands
         switch (cmd) {
             case 'C': {
-                // Create
-                std::string name = console.prompt("New folder name: ");
-                std::string desc = console.prompt("Description: ");
-                folders.add(Folder(currentUser->getId(), name, desc));
-                fm.saveFolders(folders);
-                break;
+                    std::string name = console.prompt("New folder name: ");
+                    std::string desc = console.prompt("Description: ");
+
+                    // Load full folder list
+                    auto allFolders = fm.loadFolders();
+                    allFolders.add(Folder(currentUser->getId(), name, desc));
+                    fm.saveFolders(allFolders);
+                    break;
             }
             case 'D': {
-                // Delete
-                int num = console.promptInt("Delete which #? ", 1, int(view.size()));
-                int delIndex = num - 1;
-                if (delIndex >= 0 && delIndex < int(view.size())) {
-                    int delId = view[delIndex]->getId();
-                    List<Folder> keep;
-                    for (auto it = folders.begin(); it != folders.end(); ++it) {
-                        if ((*it).getId() != delId) keep.add(std::move(*it));
+                    int num = console.promptInt("Delete which #? ", 1, int(view.size()));
+                    int delIndex = num - 1;
+                    if (delIndex >= 0 && delIndex < int(view.size())) {
+                        int delId = view.get(delIndex)->getId();
+
+                        // Load full folder list
+                        auto allFolders = fm.loadFolders();
+                        List<Folder> keep;
+                        for (auto it = allFolders.begin(); it != allFolders.end(); ++it) {
+                            if ((*it).getId() != delId) {
+                                keep.add(std::move(*it));
+                            }
+                        }
+                        fm.saveFolders(keep);
+                    } else {
+                        std::cout << " Invalid folder number.\n";
                     }
-                    fm.saveFolders(keep);
-                } else {
-                    std::cout << "❌ Invalid folder number.\n";
-                }
-                break;
+                    break;
             }
             case 'R': {
-                // Rename
-                int num = console.promptInt("Rename which #? ", 1, int(view.size()));
-                int renIndex = num - 1;
-                if (renIndex >= 0 && renIndex < int(view.size())) {
-                    int renId = view[renIndex]->getId();
-                    std::string newName = console.prompt("New name: ");
-                    std::string newDesc = console.prompt("New desc: ");
-                    for (auto it = folders.begin(); it != folders.end(); ++it) {
-                        if ((*it).getId() == renId) {
-                            (*it).setName(newName);
-                            (*it).setDescription(newDesc);
+                    int num = console.promptInt("Rename which #? ", 1, int(view.size()));
+                    int renIndex = num - 1;
+                    if (renIndex >= 0 && renIndex < int(view.size())) {
+                        int renId = view.get(renIndex)->getId();
+                        std::string newName = console.prompt("New name: ");
+                        std::string newDesc = console.prompt("New desc: ");
+
+                        // Load full folder list
+                        auto allFolders = fm.loadFolders();
+                        for (auto it = allFolders.begin(); it != allFolders.end(); ++it) {
+                            if ((*it).getId() == renId) {
+                                (*it).setName(newName);
+                                (*it).setDescription(newDesc);
+                                break;
+                            }
                         }
+                        fm.saveFolders(allFolders);
+                    } else {
+                        std::cout << " Invalid folder number.\n";
                     }
-                    fm.saveFolders(folders);
-                } else {
-                    std::cout << "❌ Invalid folder number.\n";
-                }
-                break;
+                    break;
             }
             case 'W': {
-                // Manage Words
                 int num = console.promptInt("Open words for folder #? ", 1, int(view.size()));
                 int wIndex = num - 1;
                 if (wIndex >= 0 && wIndex < int(view.size())) {
-                    manageWords(view[wIndex]->getId());
+                    manageWords(view.get(wIndex)->getId());
                 } else {
-                    std::cout << "❌ Invalid folder number.\n";
+                    std::cout << " Invalid folder number.\n";
                 }
                 break;
             }
             case 'V': {
-                // View Quiz Results
                 int num = console.promptInt("View results for folder #? ", 1, int(view.size()));
                 int vIndex = num - 1;
                 if (vIndex >= 0 && vIndex < int(view.size())) {
-                    manageQuizResults(view[vIndex]->getId());
+                    manageQuizResults(view.get(vIndex)->getId());
                 } else {
-                    std::cout << "❌ Invalid folder number.\n";
+                    std::cout << " Invalid folder number.\n";
                 }
                 break;
             }
             case 'B':
-                // Back to main menu
                 return;
             default:
-                std::cout << "❌ Unrecognized command.\n";
+                std::cout << " Unrecognized command.\n";
         }
 
         console.pause();
     }
 }
-
 
 void MenuService::manageQuizResults(int folderId) {
     console.spacer();
@@ -222,13 +240,13 @@ void MenuService::manageQuizResults(int folderId) {
     }
 
     if (results.empty()) {
-        std::cout << "📊 No quiz results for this folder yet.\n";
+        std::cout << " No quiz results for this folder yet.\n";
         console.pause();
         return;
     }
 
     // Display header
-    std::cout << "📊 Quiz Results\n\n";
+    std::cout << " Quiz Results\n\n";
     std::cout << " #  Date & Time           Score\n";
     std::cout << "-----------------------------------\n";
 
@@ -270,7 +288,7 @@ void MenuService::manageWords(int folderId) {
             }
         }
         if (words.empty()) {
-            std::cout << "📖 No words in this folder.\n";
+            std::cout << " No words in this folder.\n";
             console.pause();
             return;
         }
@@ -292,7 +310,7 @@ void MenuService::manageWords(int folderId) {
         }
 
         // 3) Display header with last‐reviewed column
-        std::cout << "📖  Words (A→Z)  📖\n\n";
+        std::cout << " Words (A→Z) \n\n";
         std::printf("%3s  %-15s  %-25s  %7s  %-19s\n",
                     "#", "Term", "Definition", "% Known", "Last Reviewed");
         std::printf("--------------------------------------------------------------------------------\n");
@@ -323,8 +341,8 @@ void MenuService::manageWords(int folderId) {
         }
 
         // 5) Actions
-        std::cout << "\n[A]➕ Add   [D]➖ Delete   [B]🔙 Back\n\n";
-        std::string raw = console.prompt("👉  Word # or cmd: ");
+        std::cout << "\n[A] Add   [D] Delete   [B] Back\n\n";
+        std::string raw = console.prompt("  Word # or cmd: ");
         std::string inp = ltrim(raw);
         if (inp.empty()) continue;
         char cmd = std::toupper(static_cast<unsigned char>(inp.at(0)));
@@ -332,9 +350,9 @@ void MenuService::manageWords(int folderId) {
         if (std::isdigit(cmd)) {
             int n = std::stoi(inp) - 1;
             if (n >= 0 && n < int(words.size())) {
-                std::cout << "🔍 Reviewing \"" << words.get(n).getTerm() << "\"...\n";
+                std::cout << " Reviewing \"" << words.get(n).getTerm() << "\"...\n";
             } else {
-                std::cout << "❌ Invalid word number.\n";
+                std::cout << " Invalid word number.\n";
             }
         } else {
             switch (cmd) {
@@ -357,14 +375,14 @@ void MenuService::manageWords(int folderId) {
                         }
                         fm.saveWords(keep);
                     } else {
-                        std::cout << "❌ Invalid number.\n";
+                        std::cout << " Invalid number.\n";
                     }
                     break;
                 }
                 case 'B':
                     return;
                 default:
-                    std::cout << "❌ Unknown command.\n";
+                    std::cout << " Unknown command.\n";
             }
         }
 
